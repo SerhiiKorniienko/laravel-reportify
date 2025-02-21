@@ -14,7 +14,7 @@ class ReportifyServiceProvider extends PackageServiceProvider
             ->name('laravel-reportify')
             ->hasConfigFile('reportify')
             ->hasMigration('create_reportify_table')
-            ->hasInstallCommand(function(InstallCommand $command) {
+            ->hasInstallCommand(function (InstallCommand $command) {
                 $command->publishConfigFile()
                     ->askToRunMigrations()
                     ->askToStarRepoOnGitHub('SerhiiKorniienko/laravel-reportify');
