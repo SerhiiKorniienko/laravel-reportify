@@ -2,6 +2,7 @@
 
 namespace SerhiiKorniienko\Reportify;
 
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -13,6 +14,10 @@ class ReportifyServiceProvider extends PackageServiceProvider
             ->name('laravel-reportify')
             ->hasConfigFile('reportify')
             ->hasMigration('create_reportify_table')
-            ->runsMigrations();
+            ->hasInstallCommand(function(InstallCommand $command) {
+                $command->publishConfigFile()
+                    ->askToRunMigrations()
+                    ->askToStarRepoOnGitHub('SerhiiKorniienko/laravel-reportify');
+            });
     }
 }
