@@ -45,8 +45,12 @@ trait Reportable
     /**
      * Scopes
      */
-    public function scopeNotReportedBy($query, $userId)
+    public function scopeNotReportedBy($query, ?int $userId)
     {
+        if (! $userId) {
+            return $query;
+        }
+
         return $query->whereDoesntHave('reports', function ($q) use ($userId) {
             $q->where('reporter_id', $userId);
         });
@@ -63,9 +67,10 @@ trait Reportable
         });
     }
 
-    public function scopeVisibleFor($query, $userId)
+    public function scopeVisibleFor($query, ?int $userId)
     {
-        return $query->notReportedBy($userId)
+        return $query
+            ->notReportedBy($userId)
             ->notFlaggedGlobally();
     }
 }
