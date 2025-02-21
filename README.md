@@ -5,15 +5,7 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/serhiikorniienko/laravel-reportify/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/serhiikorniienko/laravel-reportify/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/serhiikorniienko/laravel-reportify.svg?style=flat-square)](https://packagist.org/packages/serhiikorniienko/laravel-reportify)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/laravel-reportify.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/laravel-reportify)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+Simple, yet powerful package for content reporting and moderation in Laravel applications. Add a `Reportable` trait to your models and you're ready to go.
 
 ## Installation
 
@@ -23,38 +15,62 @@ You can install the package via composer:
 composer require serhiikorniienko/laravel-reportify
 ```
 
-You can publish and run the migrations with:
+You can simply run install command to publish config, migrations and migrate the database:
+```bash
+php artisan reportify:install
+```
+
+Alternatively, you can publish the migration and config file separately:
 
 ```bash
-php artisan vendor:publish --tag="laravel-reportify-migrations"
+php artisan vendor:publish --tag="reportify-migrations"
 php artisan migrate
 ```
 
-You can publish the config file with:
+And a config file:
 
 ```bash
-php artisan vendor:publish --tag="laravel-reportify-config"
+php artisan vendor:publish --tag="reportify-config"
 ```
 
-This is the contents of the published config file:
+## Configuration
 
+Basic configuration is stored in `config/reportify.php` file. You can change the default values there.
+
+`global_threshold` - the number of reports required to mark a content as inappropriate for everyone.
 ```php
 return [
+    'global_threshold' => 3,
 ];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="laravel-reportify-views"
 ```
 
 ## Usage
 
+Add the `Reportable` trait to get started
 ```php
-$reportify = new SerhiiKorniienko\Reportify();
-echo $reportify->echoPhrase('Hello, SerhiiKorniienko!');
+use SerhiiKorniienko\Reportify\Reportable;
+
+class MyModel extends Model
+{
+    // this trait adds the ability to report the model
+    use Reportable;
+}
 ```
+
+Report your model using the `report` method
+```php
+    $model->report()
+        ->withReporter($user)
+        ->withReason('This is inappropriate content')
+        ->withStatus('pending')
+        ->create();
+```
+
+Check if the model should be available to a user
+```php
+    $model->visibleFor($user);
+```
+Currently, reportable model would not be visible for a user who has reported it. Also, it would not be visible for all users if the number of reports exceeds the global threshold.
 
 ## Testing
 
