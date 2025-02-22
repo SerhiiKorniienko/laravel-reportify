@@ -61,6 +61,7 @@ trait Reportable
         $threshold = config('reportify.global_threshold', 3);
 
         return $query->whereDoesntHave('reports', function ($q) use ($threshold) {
+            $q->getQuery()->columns = []; // reset columns to avoid SQL errors with ONLY_FULL_GROUP_BY
             $q->selectRaw('reportable_id, COUNT(*) as report_count')
                 ->groupBy('reportable_id')
                 ->havingRaw('COUNT(*) >= ?', [$threshold]);
